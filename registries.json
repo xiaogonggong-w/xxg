@@ -1,0 +1,26 @@
+[
+  {
+    "name": "npm",
+    "url": "https://registry.npmjs.org/"
+  },
+  {
+    "name": "yarn",
+    "url": "https://registry.yarnpkg.com/"
+  },
+  {
+    "name": "cnpm",
+    "url": "http://r.cnpmjs.org/"
+  },
+  {
+    "name": "taobao",
+    "url": "https://registry.npmmirror.com/"
+  },
+  {
+    "name": "npmMirror",
+    "url": "https://skimdb.npmjs.com/registry/"
+  },
+  {
+    "name": "urtp",
+    "url": "http://10.120.150.172:4873/"
+  }
+]

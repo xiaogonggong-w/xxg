@@ -1,0 +1,29 @@
+{
+  "name": "xxg",
+  "version": "1.0.1",
+  "description": "可以切换npm源的工具",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "node installOutput.js"
+  },
+  "keywords": [
+    "nrm",
+    "npm"
+  ],
+  "bin": {
+    "xxg": "./src/index.js"
+  },
+  "author": "xiaogonggong-w",
+  "repository": {
+    "url": "",
+    "type": "git"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "commander": "10.0.1",
+    "cross-spawn": "7.0.3",
+    "inquirer": "8.0.0",
+    "node-http-ping": "^0.3.1"
+  }
+}
