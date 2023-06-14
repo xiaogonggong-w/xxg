@@ -1,10 +1,10 @@
 {
   "name": "xxg",
-  "version": "1.0.6",
+  "version": "1.0.5",
   "description": "可以切换npm源的工具",
   "main": "index.js",
   "scripts": {
-    "postinstall": "node -e installOutput.js"
+    "postinstall": "node -e \"try{require('./installOutput')}catch(e){}\""
   },
   "keywords": [
     "nrm",
