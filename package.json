@@ -4,7 +4,7 @@
   "description": "可以切换npm源的工具",
   "main": "index.js",
   "scripts": {
-    "postinstall": "node -e \"try{require('./installOutput')}catch(e){}\""
+    "postinstall": "node -e installOutput.js"
   },
   "keywords": [
     "nrm",
