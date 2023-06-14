@@ -1,6 +1,6 @@
 {
   "name": "xxg",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "可以切换npm源的工具",
   "main": "index.js",
   "scripts": {
