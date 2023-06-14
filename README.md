@@ -1,8 +1,15 @@
 # 这是一个可以切换npm镜像源的工具
+# 安装
+```
+npm i xxg -g
 
+```
+
+# 使用
 ## ls
 ```
 xxg ls
+
 ```
 查看所有的镜像源
 
@@ -13,14 +20,14 @@ xxg use taobao
 
 使用淘宝源
 
-# add
+## add
 
 ```
 xxg add
 ```
 添加镜像源
 
-# del
+## del
 
 ```
 xxg del
@@ -28,20 +35,20 @@ xxg del
 
 删除镜像源
 
-# current
+## current
 ```
 xxg current
 ```
 查看当前镜像源
 
-# ping
+## ping
 ```
 xxg ping taobao
 ```
 
 测试淘宝源的的响应时间
 
-# 所有命令
+## 所有命令
 Options:
   -V, --version    output the version number
   -h, --help       display help for command
