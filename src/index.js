@@ -8,7 +8,7 @@ const inquirer = require('inquirer');
 const spawn = require('cross-spawn');
 const HttpPing = require('node-http-ping');
 
-const REGISTRY_CONFIG_FILE = path.join('registries.json');
+const REGISTRY_LIST = require('../registries.json');
 
 const package = require('../package.json')
 
@@ -145,22 +145,12 @@ program
 
 
 function getRegistryList() {
-  try {
-    const content = fs.readFileSync(REGISTRY_CONFIG_FILE, { encoding: 'utf-8' });
-    return JSON.parse(content);
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      return [];
-    }
-
-    console.error(`Failed to read registry config file: ${err.message}`);
-    process.exit(1);
-  }
+  return REGISTRY_LIST
 }
 
 function saveRegistryList(registries) {
   try {
-    fs.writeFileSync(REGISTRY_CONFIG_FILE, JSON.stringify(registries, null, 2));
+    fs.writeFileSync('/registries.json', JSON.stringify(registries, null, 2));
   } catch (err) {
     console.error(`Failed to save registry config file: ${err.message}`);
     process.exit(1);
