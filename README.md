@@ -15,7 +15,7 @@ xxg ls
 
 ## use
 ```
-xxg use taobao
+xxg use taobao -l  或者 xxg use taobao -g
 ```
 
 使用淘宝源
@@ -50,21 +50,14 @@ xxg ping taobao
 
 ## 所有命令
 Options:
-  -V, --version    output the version number
-  -h, --help       display help for command
+  -V, --version             output the version number
+  -h, --help                display help for command
 
 Commands:
-
-  ls               查看所有可用的源
-
-  use <registry>   切换到具体的源
-
-  add              添加一个新的源
-
-  del <registry>   删除一个源
-
-  current          查看当前的源
-
-  ping [registry]  测试源的速度，默认当前的源（也了选择）
-  
-  help [command]   display help for command
+  ls                        查看所有可用的源
+  use [options] <registry>  切换到具体的源,options环境配置有-l(--local)和-g(--global), 默认-g
+  add                       添加一个新的源
+  del <registry>            删除一个源
+  current                   查看当前的源
+  ping [registry]           测试源的速度，默认当前的源（也可以选择）
+  help [command]            display help for command

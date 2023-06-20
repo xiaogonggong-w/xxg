@@ -26,7 +26,7 @@ program
     const currentRegistry = getCurrentRegistry();
     const maxLength = Math.max(...registries.map(registry => registry.name.length));
     if (registries.length > 0) {
-      console.log(registries.map((registry) => `${ currentRegistry === registry.url ? '*' :' ' } ${registry.name.padEnd(maxLength + 1)}->\t${registry.url}`).join('\n'));
+      console.log(registries.map((registry) => `${currentRegistry === registry.url ? '*' : ' '} ${registry.name.padEnd(maxLength + 1)}->\t${registry.url}`).join('\n'));
     } else {
       console.log('没有找到源');
     }
@@ -34,8 +34,10 @@ program
 
 program
   .command('use <registry>')
-  .description('切换到具体的源')
-  .action((registry) => {
+  .description('切换到具体的源,options环境配置有-l(--local)和-g(--global), 默认-g')
+  .option('-g,--global', '使用全局环境', true)
+  .option('-l,--local', '使用本地环境会生成一个.npmrc文件,如不需要请使用全局环境(默认)')
+  .action((registry, options) => {
     const registries = getRegistryList();
     const targetRegistry = registries.find((item) => item.name === registry);
 
@@ -44,8 +46,8 @@ program
       return;
     }
 
-    fs.writeFileSync(path.join(os.homedir(), '.npmrc'), `registry=${targetRegistry.url}\n`);
-    console.log(`成功切换到"${registry}".`);
+    const environment = options.local ? 'local' : 'global'
+    setCurrentRegistry(targetRegistry, environment)
   });
 
 program
@@ -97,57 +99,65 @@ program
   });
 
 program
-.command('current')
-.description('查看当前的源')
-.action(()=>{
+  .command('current')
+  .description('查看当前的源')
+  .action(() => {
     const registry = getCurrentRegistry();
-    const { name, url  } = getCurrentRegistryName(registry)
-    if(registry){
-        console.log(`当前源为${name}:${ url }`)
-    }else{
-        console.log('当前源不存在')
+    const { name, url } = getCurrentRegistryName(registry)
+    if (registry) {
+      console.log(`当前源为${name}:${url}`)
+    } else {
+      console.log('当前源不存在')
     }
-})
+  })
 
 program
-.command('ping [registry]')
-.description('测试源的速度，默认当前的源（也了选择）')
-.action((registry)=>{
+  .command('ping [registry]')
+  .description('测试源的速度，默认当前的源（也可以选择）')
+  .action((registry) => {
     const registries = getRegistryList();
-    if(registry){
-        // 说明用户输入了一个具体的源
-        const current = registries.filter(v=> v.name === registry)
+    if (registry) {
+      // 说明用户输入了一个具体的源
+      const current = registries.filter(v => v.name === registry)
 
-        if(current.length > 0){
-            const url = current[0].url;
-            HttpPing(url.slice(0, url.length - 1)).then(time=>console.log(`当前源响应时间为${time}ms`))
-            .catch(()=>console.log("响应失败"))
-        }
-    }else{
-        // 整理一下源的字符
-        const registriesChoices = registries.map(v=> `${v.name}---${v.url}`)
-        // 用户没有输入，让他选
-        const question = {
-            type: 'list',
-            name: 'source',
-            message: '请选择要使用的源：',
-            choices: registriesChoices,
-          };
+      if (current.length > 0) {
+        const url = current[0].url;
+        HttpPing(url.slice(0, url.length - 1)).then(time => console.log(`当前源响应时间为${time}ms`))
+          .catch(() => console.log("响应失败"))
+      }
+    } else {
+      // 整理一下源的字符
+      const registriesChoices = registries.map(v => `${v.name}---${v.url}`)
+      // 用户没有输入，让他选
+      const question = {
+        type: 'list',
+        name: 'source',
+        message: '请选择要使用的源：',
+        choices: registriesChoices,
+      };
 
-          inquirer.prompt(question).then(answer => {
-            console.log(`您选择了 ${answer.source}`);
-            const [name, url] = answer.source.split('---');
-            HttpPing(url.slice(0, url.length - 1)).then(time=>console.log(`当前源响应时间为${time}ms`))
-            .catch(()=>console.log("响应失败"))
-          });
+      inquirer.prompt(question).then(answer => {
+        console.log(`您选择了 ${answer.source}`);
+        const [name, url] = answer.source.split('---');
+        HttpPing(url.slice(0, url.length - 1)).then(time => console.log(`当前源响应时间为${time}ms`))
+          .catch(() => console.log("响应失败"))
+      });
     }
-})
+  })
 
 
+/**
+ * 获取所有的镜像源
+ * @returns Array
+ */
 function getRegistryList() {
   return REGISTRY_LIST
 }
 
+/**
+ * 更新镜像源的数据
+ * @param {Array} registries 
+ */
 function saveRegistryList(registries) {
   try {
     fs.writeFileSync('/registries.json', JSON.stringify(registries, null, 2));
@@ -157,25 +167,89 @@ function saveRegistryList(registries) {
   }
 }
 
+/**
+ * 获取当前的镜像源
+ * @returns void
+ */
 function getCurrentRegistry() {
-   // 执行 npm config get registry 命令并获取输出结果
-const result = spawnSync('npm', ['config', 'get', 'registry']);
+  // 执行 npm config get registry 命令并获取输出结果
+  const result = spawnSync('npm', ['config', 'get', 'registry']);
 
-if (result.status === 0) {
-  // 输出结果为标准输出流中的第一行，去除两端的空格
-  const registryUrl = result.output[1].toString().trim();
+  if (result.status === 0) {
+    // 输出结果为标准输出流中的第一行，去除两端的空格
+    const registryUrl = result.output[1].toString().trim();
 
-  return registryUrl
-} else {
-  console.error(result.stderr.toString()); // 输出错误信息
+    return registryUrl
+  } else {
+    console.error(result.stderr.toString()); // 输出错误信息
+  }
 }
+
+/**
+ * 
+ * @param {获取当前镜像源的整体数据，包含了name和url} registry 
+ * @returns 
+ */
+function getCurrentRegistryName(registry) {
+  const registries = getRegistryList();
+
+  const found = registries.filter(v => v.url === registry);
+
+  return found.length > 0 ? found[0] : { name: '', url: '' }
 }
 
-function getCurrentRegistryName(registry){
-    const  registries = getRegistryList();
+/**
+ * 获取当前执行命令的路径
+ */
+function getsTheCommandFilePath() {
+  return process.cwd()
+}
 
-    const found = registries.filter(v=> v.url === registry);
-     
-    return found.length > 0 ? found[0] : {name: '', url: ''}
+/**
+ * 设置当前镜像源，可以设置当前镜像源和全局镜像源
+ * @param {string} registry  global 和local
+ * @param {string} condition 
+ */
+function setCurrentRegistry(registry, condition) {
+
+  //如果实在当前项目环境下，需要生成一个.npmrc文件
+  if (condition === 'local') {
+    const filePath = path.join(getsTheCommandFilePath(), '.npmrc');
+    // 检测当前的目录下是否有.npmrc文件，没有则创建
+    try {
+      if (!fs.existsSync(filePath)) { // 如果没有.npmrc文件，直接创建并写入数据
+        fs.writeFileSync(filePath, `registry=${registry.url}\n`);
+
+      } else {
+        // 如果有文件
+        /**
+         * 1.读取内容
+         * 2.使用\n将数据分开
+         * 3.获取到registry源
+         * 4.将它替换掉
+         */
+        const content = fs.readFileSync(filePath, 'utf8')
+
+        const targetRegistry = content.split('\n').find(v => v.includes('registry'))
+
+        const npmrc = content.replace(targetRegistry, `registry=${registry.url}`)
+
+        fs.writeFileSync(filePath, npmrc);
+
+      }
+      console.log(`成功切换到"${registry.name}".`);
+    } catch (error) {
+      console.log('创建.npmrc文件失败')
+    }
+  } else if (condition === 'global') {
+    const result = spawnSync('npm', ['config', '--global', 'set', 'registry', registry.url]);
+
+    if (result.status === 0) {
+      // 成功切换
+      console.log(`成功切换到"${registry.name}".`);
+    } else {
+      console.error(result.stderr.toString()); // 输出错误信息
+    }
+  }
 }
 program.parse(process.argv);
