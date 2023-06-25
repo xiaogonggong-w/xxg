@@ -18,9 +18,5 @@
   {
     "name": "npmMirror",
     "url": "https://skimdb.npmjs.com/registry/"
-  },
-  {
-    "name": "urtp",
-    "url": "http://10.120.150.172:4873/"
   }
 ]
