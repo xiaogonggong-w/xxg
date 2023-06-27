@@ -242,7 +242,7 @@ function setCurrentRegistry(registry, condition) {
       console.log('创建.npmrc文件失败')
     }
   } else if (condition === 'global') {
-    const result = spawnSync('npm', ['config', '--global', 'set', 'registry', registry.url]);
+    const result = spawnSync('npm', ['config', 'set', 'registry', registry.url]);
 
     if (result.status === 0) {
       // 成功切换
