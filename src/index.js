@@ -7,8 +7,10 @@ const { Command } = require('commander');
 const inquirer = require('inquirer');
 const spawn = require('cross-spawn');
 const HttpPing = require('node-http-ping');
+const { fileName } = require('./generateUrl')
 
-const REGISTRY_LIST = require('../registries.json');
+// 获取配置文件的路径
+const configPath = path.join(os.homedir(), fileName);
 
 const package = require('../package.json')
 
@@ -151,7 +153,22 @@ program
  * @returns Array
  */
 function getRegistryList() {
-  return REGISTRY_LIST
+  // 检查配置文件是否存在
+  if (fs.existsSync(configPath)) {
+    // 读取配置文件内容
+    const configFileContent = fs.readFileSync(configPath, 'utf-8');
+    let configData = []
+    try {
+      configData = JSON.parse(configFileContent)
+    } catch (error) {
+      console.error(`配置文件格式错误，请检查`, error)
+    }
+
+    return configData
+
+  } else {
+    console.log("配置文件不存在，请先配置或者重新安装工具")
+  }
 }
 
 /**
@@ -160,7 +177,7 @@ function getRegistryList() {
  */
 function saveRegistryList(registries) {
   try {
-    fs.writeFileSync(path.join(__dirname, '../registries.json'), JSON.stringify(registries, null, 2));
+    fs.writeFileSync(path.join(__dirname, fileName), JSON.stringify(registries, null, 2));
   } catch (err) {
     console.error(`Failed to save registry config file: ${err.message}`);
     process.exit(1);

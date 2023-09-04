@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+const { generateUrl } = require('./src/generateUrl')
+
+generateUrl()
 
 console.log(`
                                  _____                   _____          
