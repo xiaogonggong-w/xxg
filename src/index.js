@@ -179,7 +179,7 @@ function getRegistryList() {
  */
 function saveRegistryList(registries) {
   try {
-    fs.writeFileSync(path.join(__dirname, fileName), JSON.stringify(registries, null, 2));
+    fs.writeFileSync(configPath, JSON.stringify(registries, null, 2));
   } catch (err) {
     console.error(`Failed to save registry config file: ${err.message}`);
     process.exit(1);
