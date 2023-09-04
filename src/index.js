@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// 在代码中设置输出编码为 UTF-8
+process.stdout.setEncoding('utf-8');
 
 const fs = require('fs');
 const os = require('os');
@@ -269,4 +271,6 @@ function setCurrentRegistry(registry, condition) {
     }
   }
 }
+
+
 program.parse(process.argv);
